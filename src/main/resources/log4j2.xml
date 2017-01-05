@@ -5,8 +5,8 @@
 			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %c{1}(%F:%L) - %m%n" />
 		</Console>
 
-		<RollingFile name="fixedTimeFileAppender" fileName="my-dubbo-provider.log"
-			filePattern="my-dubbo-provider.log.%d{yyyy-MM-dd_HH}-%i">
+		<RollingFile name="fixedTimeFileAppender" fileName="my-dubbo-consumer.log"
+			filePattern="my-dubbo-consumer.log.%d{yyyy-MM-dd_HH}-%i">
 			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %c{1}(%L) - %m%n" />
 			<Policies>
 				<TimeBasedTriggeringPolicy />
