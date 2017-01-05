@@ -1,0 +1,169 @@
+
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'war'
+
+javadoc {
+    options.encoding = "UTF-8"
+    options.charSet = "UTF-8"
+}
+
+sourceCompatibility = 1.7
+
+def defaultEncoding = 'UTF-8'
+
+[compileJava, compileTestJava]*.options*.encoding = defaultEncoding
+
+
+repositories {
+    maven {
+        url "http://maven.webank.io/nexus/content/groups/public/"
+    }
+
+    mavenLocal()
+    mavenCentral()
+
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+
+        resources {
+            srcDir 'src/main/resources'
+        }
+    }
+
+    unitTest {
+        java {
+            srcDir 'src/unit.test/java'
+        }
+
+        resources {
+            srcDir 'src/unit.test/resources'
+        }
+    }
+
+
+    intTest {
+        java {
+            srcDir 'src/int.test/java'
+        }
+
+        resources {
+            srcDir 'src/int.test/resources'
+        }
+    }
+
+
+    web {
+        resources {
+            srcDir 'src/main/webapp'
+        }
+        compileClasspath = sourceSets.main.output + configurations.testCompile
+        runtimeClasspath = output + compileClasspath
+    }
+
+}
+
+clean {
+    delete 'dist'
+    delete 'build'
+    delete 'out'
+}
+
+def spring_version="4.0.6.RELEASE"
+List spring =[
+		"org.springframework:spring-core:$spring_version",
+		"org.springframework:spring-beans:$spring_version",
+		"org.springframework:spring-aop:$spring_version",
+		//"org.springframework:spring-expression:$spring_version",
+		"org.springframework:spring-instrument:$spring_version",
+		"org.springframework:spring-context:$spring_version",
+		//"org.springframework:spring-jdbc:$spring_version",
+		"org.springframework:spring-context-support:$spring_version",
+		"org.springframework:spring-web:$spring_version",
+		//"org.springframework:spring-orm:$spring_version",
+		"org.springframework:spring-aspects:$spring_version",
+		"org.springframework:spring-webmvc:$spring_version",
+		"org.springframework:spring-test:$spring_version"
+]
+
+List junit = [
+	"junit:junit:4.11"
+]
+
+List logger = [
+		'org.apache.logging.log4j:log4j-api:2.1',
+		'org.apache.logging.log4j:log4j-core:2.1',
+		'org.apache.logging.log4j:log4j-slf4j-impl:2.1',
+		'org.apache.logging.log4j:log4j-web:2.1',
+		'commons-logging:commons-logging-adapters:1.1',
+		'commons-logging:commons-logging:1.2'
+]
+
+List servlet =  [
+	"javax.servlet:javax.servlet-api:3.1.0",
+]
+
+List jetty = [
+	'javax.validation:validation-api:1.1.0.Final', 
+	'javax.ws.rs:javax.ws.rs-api:2.0.1',	
+	'org.eclipse.jetty:jetty-servlet:8.0.0.M0',
+	'org.apache.cxf:cxf-rt-frontend-jaxrs:3.0.2',
+	'org.codehaus.jackson:jackson-jaxrs:1.9.13',
+	'org.eclipse.jetty:jetty-webapp:8.0.0.M0'
+]
+
+List lmax = [
+    'com.lmax:disruptor:3.3.2'
+]
+
+List dubbo =[
+		"org.apache.zookeeper:zookeeper:3.4.9",
+		"com.101tec:zkclient:0.10"
+]
+
+List json =[
+		"com.alibaba:fastjson:1.1.42",
+		"com.fasterxml.jackson.core:jackson-annotations:2.8.1",
+		"com.fasterxml.jackson.core:jackson-core:2.8.1",
+		"com.fasterxml.jackson.core:jackson-databind:2.8.1",
+		"com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.8.1",
+		"com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.8.1",
+		"com.fasterxml.woodstox:woodstox-core:5.0.2",
+		"com.fasterxml:classmate:1.3.1"
+]
+
+dependencies {
+    compile spring,logger,servlet,jetty,dubbo,lmax,json
+    compile('com.alibaba:dubbo:2.5.3') {
+        exclude(group: 'org.springframework', module: 'spring')
+    }
+    
+    testCompile spring,logger,junit,logger,jetty,dubbo,lmax,json
+    
+    runtime spring,logger,servlet,jetty,dubbo,lmax,json
+    runtime('com.alibaba:dubbo:2.5.3') {
+        exclude(group: 'org.springframework', module: 'spring')
+    }
+}
+
+
+task createProject << {
+    sourceSets*.java.srcDirs*.each { it.mkdirs() }
+    sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+
+    delete file('src/test')
+    delete file('src/unit.test')
+    delete file('src/int.test')
+
+}
+
+
+
+
+
